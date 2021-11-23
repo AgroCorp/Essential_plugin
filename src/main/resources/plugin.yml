@@ -1,0 +1,30 @@
+name: Essentials
+version: ${project.version}
+main: me.agronaut.essentials.Essentials
+api-version: 1.13
+
+commands:
+  tp:
+    usage: /tp [playerName]
+    description: Teleport to other player
+  tph:
+    usage: /tph [playerName]
+    description: Teleport other player to you
+  fly:
+    usage: /fly
+    description: Toggle fly on/off
+  heal:
+    usage: /heal [playerName]
+    description: Heal yourself or other player
+  feed:
+    usage: /feed [playerName]
+    description: Feed yourself or other player
+  hide:
+    usage: /hide
+    description: Toggle invisibility on/off
+  inventory:
+    usage: /inventory [playerName]
+    description: open other players inventory
+    aliases:
+      - inv
+      - i
