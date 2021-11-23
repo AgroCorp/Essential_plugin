@@ -22,8 +22,10 @@ public class inventory implements CommandExecutor {
                 Player target = Bukkit.getPlayerExact(args[0]);
                 if (target != null) {
                     player.openInventory(target.getInventory());
+                    return true;
                 } else {
                     player.sendMessage(ChatColor.RED + "A player nem talalhato a serveren.");
+                    return false;
                 }
             }
         } else {

@@ -1,2 +1,9 @@
 hello-msg: "&5Üdv &3%player% &5!"
 hello-submsg: "&2Szerveren épp &4%daytime% &2van"
+
+use-db: false
+db:
+  host: 192.168.2.55
+  port: 3306
+  user: gaborka98
+  pw: Gaborka11

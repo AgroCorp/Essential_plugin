@@ -28,3 +28,7 @@ commands:
     aliases:
       - inv
       - i
+  scoreboard:
+    usage: /scoreboard
+    description: toggle scoreboard on/off
+    aliases: [sb]

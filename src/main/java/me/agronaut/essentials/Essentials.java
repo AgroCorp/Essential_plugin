@@ -2,6 +2,7 @@ package me.agronaut.essentials;
 
 import me.agronaut.essentials.commands.*;
 import me.agronaut.essentials.events.chat;
+import me.agronaut.essentials.events.damage;
 import me.agronaut.essentials.events.join;
 import me.agronaut.essentials.events.move;
 import net.md_5.bungee.api.ChatMessageType;
@@ -49,12 +50,15 @@ public final class Essentials extends JavaPlugin {
         getCommand("hide").setExecutor(new hide(this));
         getCommand("heal").setExecutor(new heal());
         getCommand("inventory").setExecutor(new inventory());
+        getCommand("scoreboard").setExecutor(new scoreboard(this));
 
         getLogger().info("events initialize");
         // register Listeners
         getServer().getPluginManager().registerEvents(new join(this), this);
         getServer().getPluginManager().registerEvents(new move(this), this);
         getServer().getPluginManager().registerEvents(new chat(), this);
+        getServer().getPluginManager().registerEvents(new damage(this), this);
+
 
         getLogger().info("save default config");
         // default config save
@@ -68,7 +72,7 @@ public final class Essentials extends JavaPlugin {
         {
             for (String key : moneyConfig.getConfigurationSection("money").getKeys(false))
             {
-                getLogger().info("Player UUID: " + key + ", money: " + getConfig().getLong("money." + key + ".money"));
+                getLogger().info("Player UUID: " + key + ", money: " + String.valueOf(getConfig().getLong("money." + key + ".money")));
                 playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
             }
         }
@@ -90,7 +94,7 @@ public final class Essentials extends JavaPlugin {
                     }
                 }
             }
-        }.runTaskTimerAsynchronously(this, 0L, 20/* * 60*/ * 30);
+        }.runTaskTimerAsynchronously(this, 0L, 20 * 60* 30);
     }
 
     @Override
@@ -173,7 +177,7 @@ public final class Essentials extends JavaPlugin {
                 saveResource("money.yml", false);
             } else
             {
-                getLogger().log(Level.WARNING, "failed to create folders and save money.yml");
+                getLogger().warning("failed to create folders and save money.yml");
             }
         }
 

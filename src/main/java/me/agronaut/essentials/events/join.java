@@ -1,12 +1,15 @@
 package me.agronaut.essentials.events;
 
+import me.agronaut.essentials.Classes.baseScoreBoard;
 import me.agronaut.essentials.Essentials;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scoreboard.*;
 
 public class join implements Listener {
     Essentials plugin;
@@ -51,16 +54,20 @@ public class join implements Listener {
         } else {
             player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
         }
+
+        // scoreboard
+        baseScoreBoard baseScoreBoard = new baseScoreBoard(plugin, player);
+            player.setScoreboard(baseScoreBoard.getScoreboard());
+
     }
 
     private String convertTimeToString(Long tickTime) {
         if (tickTime >= 23000) return "reggel";
-        else if (tickTime >= 18000 && tickTime < 23000) return "éjjel";
-        else if (tickTime >= 12000 && tickTime < 18000) return "este";
-        else if (tickTime >= 9000 && tickTime < 12000) return "délután";
-        else if (tickTime >= 6000 && tickTime < 9000) return "dél";
-        else if (tickTime >= 1000 && tickTime < 6000) return "délelött";
-        else if (tickTime < 1000) return "reggel";
-        else return "time";
+        else if (tickTime >= 18000) return "éjjel";
+        else if (tickTime >= 12000) return "este";
+        else if (tickTime >= 9000) return "délután";
+        else if (tickTime >= 6000) return "dél";
+        else if (tickTime >= 1000) return "délelött";
+        else return "reggel";
     }
 }
