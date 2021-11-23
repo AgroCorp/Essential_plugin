@@ -68,7 +68,7 @@ public final class Essentials extends JavaPlugin {
             for (String key : moneyConfig.getConfigurationSection("money").getKeys(false))
             {
                 getLogger().info("Player UUID: " + key + ", money: " + getConfig().getLong("money." + key + ".money"));
-                playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key));
+                playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
             }
         }
 
