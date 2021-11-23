@@ -16,7 +16,6 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -27,6 +26,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public final class Essentials extends JavaPlugin {
     private File moneyConfigFile;
@@ -125,11 +126,12 @@ public final class Essentials extends JavaPlugin {
             {
                 LivingEntity target = (LivingEntity) ent;
                 //String actionBar = ChatColor.GREEN + livingEnt.getType().toString() + ": " + getHealthColor(livingEnt.getHealth(), livingEnt.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()) + livingEnt.getHealth() + ChatColor.GREEN + "/" + livingEnt.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue();
-                String test = ChatColor.GREEN + target.getType().toString() + ": " + getHealthColor(target.getHealth(), target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue()) + healtToSquare(target.getHealth(), target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getDefaultValue());
+                String test = ChatColor.GREEN + target.getType().toString() + ": " +
+                        getHealthColor(target.getHealth(), target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue()) +
+                        healthToSquare(target.getHealth(), target.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue());
                 player.spigot().sendMessage(ChatMessageType.ACTION_BAR, TextComponent.fromLegacyText(test));
             }
         }
-
     }
 
     private ChatColor getHealthColor(double health, double max) {
@@ -140,7 +142,7 @@ public final class Essentials extends JavaPlugin {
         else return ChatColor.GREEN;
     }
 
-    private String healtToSquare(double health, double max) {
+    private String healthToSquare(double health, double max) {
         return Character.toString((char) 9632).repeat((int) (health / max * 10));
     }
 
@@ -166,8 +168,13 @@ public final class Essentials extends JavaPlugin {
         moneyConfigFile = new File(getDataFolder(), "money.yml");
         if (!moneyConfigFile.exists())
         {
-            moneyConfigFile.getParentFile().mkdirs();
-            saveResource("money.yml", false);
+            if (moneyConfigFile.getParentFile().mkdirs())
+            {
+                saveResource("money.yml", false);
+            } else
+            {
+                getLogger().log(Level.WARNING, "failed to create folders and save money.yml");
+            }
         }
 
         moneyConfig = new YamlConfiguration();
