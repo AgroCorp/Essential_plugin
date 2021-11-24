@@ -18,8 +18,14 @@ public class baseScoreBoard {
         this.plugin = plugin;
     }
 
-    private void init( Player player)
+    private void init( Player player, boolean hiddenToo)
     {
+        // if player disable scoreboard dont turn on automatically again example: get money after 30 min
+        if (!hiddenToo && player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null)
+        {
+            return;
+        }
+
         if(player.getScoreboard().getObjective("test") != null)
         {
             player.getScoreboard().getObjective("test").unregister();
@@ -41,7 +47,17 @@ public class baseScoreBoard {
 
     public void showScoreboard( Player player)
     {
-        init(player);
+        showScoreboard(player, false);
+    }
+
+    /**
+     *
+     * @param player
+     * @param disabled - if true player's scoreboard turned on everytime. If false turn scoreboard only if player turned on before.
+     */
+    public void showScoreboard(Player player, boolean disabled)
+    {
+        init(player, disabled);
     }
 
     public Scoreboard getScoreboard() {

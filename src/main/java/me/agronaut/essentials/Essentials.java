@@ -98,7 +98,7 @@ public final class Essentials extends JavaPlugin {
                     board.showScoreboard(iter);
                 }
             }
-        }.runTaskTimer(this, 0L, 20 * 60 * 10);
+        }.runTaskTimer(this, 0L, 20 * /*60 **/ 30);
     }
 
     @Override

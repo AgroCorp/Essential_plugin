@@ -32,7 +32,7 @@ public class scoreboard implements CommandExecutor {
                 baseScoreBoard baseScoreBoard = new baseScoreBoard(plugin);
                 if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) {
                     plugin.getLogger().info("Scoreboard nincs tehat show van meghivva");
-                    baseScoreBoard.showScoreboard(player);
+                    baseScoreBoard.showScoreboard(player, true);
                 } else
                 {
                     plugin.getLogger().info("Scoreboard megnyitva tehat toroljuk azt");
