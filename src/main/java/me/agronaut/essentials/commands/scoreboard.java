@@ -29,14 +29,14 @@ public class scoreboard implements CommandExecutor {
             if(manager != null)
             {
                 //plugin.getLogger().info("getObjectives length: " + player.getScoreboard().getObjectives().size());
-                if (player.getScoreboard().getObjectives().isEmpty()) {
-                    baseScoreBoard baseScoreBoard = new baseScoreBoard(plugin, player);
-
-                    player.setScoreboard(baseScoreBoard.getScoreboard());
+                baseScoreBoard baseScoreBoard = new baseScoreBoard(plugin);
+                if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) {
+                    plugin.getLogger().info("Scoreboard nincs tehat show van meghivva");
+                    baseScoreBoard.showScoreboard(player);
                 } else
                 {
-                    //plugin.getLogger().info("scoreboard eltuntetese");
-                    player.setScoreboard(manager.getMainScoreboard());
+                    plugin.getLogger().info("Scoreboard megnyitva tehat toroljuk azt");
+                    baseScoreBoard.removeScoreboard(player);
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "Hiba a scoreboard parancs futasa kozben");

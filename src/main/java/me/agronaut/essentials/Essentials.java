@@ -1,5 +1,6 @@
 package me.agronaut.essentials;
 
+import me.agronaut.essentials.Classes.baseScoreBoard;
 import me.agronaut.essentials.commands.*;
 import me.agronaut.essentials.events.chat;
 import me.agronaut.essentials.events.damage;
@@ -88,13 +89,16 @@ public final class Essentials extends JavaPlugin {
                     iter.sendMessage(ChatColor.YELLOW + "online idod miatt kapsz 100$-t");
                     if (playersMoney.containsKey(iter.getUniqueId()))
                     {
-                        playersMoney.put(iter.getUniqueId(), playersMoney.get(iter.getUniqueId()) + 100);
+                        playersMoney.put(iter.getUniqueId(), playersMoney.get(iter.getUniqueId()) + 100L);
                     } else {
                         playersMoney.put(iter.getUniqueId(), 100L);
                     }
+                    // after add money generate new scoreboard to players
+                    baseScoreBoard board = new baseScoreBoard(Essentials.this);
+                    board.showScoreboard(iter);
                 }
             }
-        }.runTaskTimerAsynchronously(this, 0L, 20 * 60* 30);
+        }.runTaskTimer(this, 0L, 20 * 60 * 10);
     }
 
     @Override

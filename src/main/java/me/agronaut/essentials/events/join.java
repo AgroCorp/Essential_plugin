@@ -56,8 +56,8 @@ public class join implements Listener {
         }
 
         // scoreboard
-        baseScoreBoard baseScoreBoard = new baseScoreBoard(plugin, player);
-            player.setScoreboard(baseScoreBoard.getScoreboard());
+        baseScoreBoard board = new baseScoreBoard(plugin);
+        board.showScoreboard(player);
 
     }
 
