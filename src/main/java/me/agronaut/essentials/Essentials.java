@@ -2,10 +2,7 @@ package me.agronaut.essentials;
 
 import me.agronaut.essentials.Classes.baseScoreBoard;
 import me.agronaut.essentials.commands.*;
-import me.agronaut.essentials.events.chat;
-import me.agronaut.essentials.events.damage;
-import me.agronaut.essentials.events.join;
-import me.agronaut.essentials.events.move;
+import me.agronaut.essentials.events.*;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -59,6 +56,7 @@ public final class Essentials extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new move(this), this);
         getServer().getPluginManager().registerEvents(new chat(), this);
         getServer().getPluginManager().registerEvents(new damage(this), this);
+        getServer().getPluginManager().registerEvents(new opingPlayer(), this);
 
 
         getLogger().info("save default config");
@@ -98,7 +96,7 @@ public final class Essentials extends JavaPlugin {
                     board.showScoreboard(iter);
                 }
             }
-        }.runTaskTimer(this, 0L, 20 * /*60 **/ 30);
+        }.runTaskTimer(this, 0L, 20 * 60 * 30);
     }
 
     @Override
