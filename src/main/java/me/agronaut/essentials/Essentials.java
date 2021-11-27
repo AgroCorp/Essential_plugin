@@ -1,11 +1,11 @@
 package me.agronaut.essentials;
 
+import me.agronaut.essentials.Classes.SQLcontroller;
 import me.agronaut.essentials.Classes.baseScoreBoard;
 import me.agronaut.essentials.commands.*;
 import me.agronaut.essentials.events.*;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -25,15 +26,21 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class Essentials extends JavaPlugin {
     private File moneyConfigFile;
     private FileConfiguration moneyConfig;
+    private File permissionFile;
+    private FileConfiguration permissionConfig;
+
+    public static String permissionMsg;
+    public static String playerNotFoundMsg;
 
     public ArrayList<UUID> hiddenPlayers = new ArrayList<>();
     public HashMap<UUID, Long> playersMoney = new HashMap<>();
+    public HashMap<String, ArrayList<String>> groupPermissions = new HashMap<>();
+    public HashMap<UUID, ArrayList<String>> playersGroups = new HashMap<>();
+    public HashMap<UUID, PermissionAttachment> playersPerms = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -41,14 +48,16 @@ public final class Essentials extends JavaPlugin {
 
         getLogger().info("commands initialize");
         // register Commands
-        getCommand("tp").setExecutor(new tp());
-        getCommand("tph").setExecutor(new tph());
-        getCommand("feed").setExecutor(new feed());
-        getCommand("fly").setExecutor(new fly());
-        getCommand("hide").setExecutor(new hide(this));
-        getCommand("heal").setExecutor(new heal());
-        getCommand("inventory").setExecutor(new inventory());
-        getCommand("scoreboard").setExecutor(new scoreboard(this));
+        getCommand("tp").setExecutor(new Tp());
+        getCommand("tph").setExecutor(new Tph());
+        getCommand("feed").setExecutor(new Feed());
+        getCommand("fly").setExecutor(new Fly());
+        getCommand("hide").setExecutor(new Hide(this));
+        getCommand("heal").setExecutor(new Heal());
+        getCommand("inventory").setExecutor(new Inventory());
+        getCommand("scoreboard").setExecutor(new Scoreboard(this));
+        getCommand("permissions").setExecutor(new PermissionCommand(this));
+        getCommand("permissions-group").setExecutor(new PermissionGroupCommand(this));
 
         getLogger().info("events initialize");
         // register Listeners
@@ -63,7 +72,10 @@ public final class Essentials extends JavaPlugin {
         // default config save
         getConfig().options().copyDefaults();
         createMoneyConfig();
+        createPermissionConfig();
         saveDefaultConfig();
+        permissionMsg = ChatColor.RED + getConfig().getString("permission-msg");
+        playerNotFoundMsg = ChatColor.RED + getConfig().getString("player-not-found-msg");
 
         getLogger().info("playersMoney initialize");
         // read in players money
@@ -76,6 +88,19 @@ public final class Essentials extends JavaPlugin {
             }
         }
 
+        // permissions beolvasasa
+        for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false))
+        {
+            // read in groups permissions
+            ArrayList<String> listOfPermissions = new ArrayList<>(permissionConfig.getStringList("groups." + group));
+            groupPermissions.put(group, listOfPermissions);
+        }
+
+        for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false))
+        {
+            ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
+            playersGroups.put(UUID.fromString(playerUUID), groups);
+        }
 
         getLogger().info("runnable initialize");
         // add money after 30 minute
@@ -111,6 +136,18 @@ public final class Essentials extends JavaPlugin {
             moneyConfig.set("money." + iter.getKey().toString() + ".money", iter.getValue());
         }
         saveMoneyConfig();
+
+
+        // save permissions
+        getLogger().info("save permissions");
+        for (String group : groupPermissions.keySet())
+        {
+            permissionConfig.set("groups." + group, groupPermissions.get(group));
+        }
+        for (UUID player : playersGroups.keySet())
+        {
+            permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+        }
     }
 
     public void showPlayer(Player player) {
@@ -190,6 +227,32 @@ public final class Essentials extends JavaPlugin {
             moneyConfig.load(moneyConfigFile);
         } catch (IOException | InvalidConfigurationException e)
         {
+            e.printStackTrace();
+        }
+    }
+
+    private void createPermissionConfig()
+    {
+        permissionFile = new File(getServer().getWorldContainer(), "permissions.yml");
+        permissionConfig = new YamlConfiguration();
+
+        try
+        {
+            permissionConfig.load(permissionFile);
+        } catch (IOException | InvalidConfigurationException e)
+        {
+            getLogger().warning("hiba a permission config inicializalasa kozben");
+            e.printStackTrace();
+        }
+    }
+
+    private void savePermissions()
+    {
+        try
+        {
+            permissionConfig.save(permissionFile);
+        } catch (IOException e) {
+            getLogger().warning("Saving permissions file failed");
             e.printStackTrace();
         }
     }
