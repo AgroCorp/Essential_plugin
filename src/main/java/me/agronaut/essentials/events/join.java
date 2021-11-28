@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
 
@@ -47,12 +48,22 @@ public class join implements Listener {
         }
 
         // edit tab menu name
-        if (player.isOp()) {
-            player.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + player.getDisplayName());
-        } else if (player.isWhitelisted()) {
-            player.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + player.getDisplayName());
-        } else {
-            player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
+        Essentials.updateTabList(player);
+
+        // permission setup
+        PermissionAttachment attachment = player.addAttachment(plugin);
+        plugin.playersPerms.put(player.getUniqueId(), attachment);
+        if (Essentials.playersGroups.containsKey(player.getUniqueId()))
+        {
+            for (String group : Essentials.playersGroups.get(player.getUniqueId()))
+            {
+                for (String perms : plugin.groupPermissions.get(group))
+                {
+                    plugin.getLogger().info("groups: " + group);
+                    plugin.getLogger().info(String.format("permission beallitasa %s: %s", player.getDisplayName(), perms));
+                    plugin.playersPerms.get(player.getUniqueId()).setPermission(perms, true);
+                }
+            }
         }
 
         // scoreboard

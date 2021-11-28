@@ -32,3 +32,11 @@ commands:
     usage: /scoreboard
     description: toggle scoreboard on/off
     aliases: [sb]
+  permissions:
+    usage: /permissions <add | remove | list> <player> [permission]
+    description: add or remove or list user permissions
+    aliases: [pm]
+  permissions-group:
+    usage: /permissions-group <add | addto | remove | removefrom | list> <group> [permission | player]
+    description: add or remove or list group permissions
+    aliases: [pmg]
