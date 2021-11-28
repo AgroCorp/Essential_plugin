@@ -66,7 +66,7 @@ public final class Essentials extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new chat(), this);
         getServer().getPluginManager().registerEvents(new damage(this), this);
         getServer().getPluginManager().registerEvents(new opingPlayer(), this);
-
+        getServer().getPluginManager().registerEvents(new LeaveEvent(this), this);
 
         getLogger().info("save default config");
         // default config save
