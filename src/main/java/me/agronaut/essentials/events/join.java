@@ -48,20 +48,14 @@ public class join implements Listener {
         }
 
         // edit tab menu name
-        if (player.isOp()) {
-            player.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + player.getDisplayName());
-        } else if (plugin.playersGroups.containsKey(player.getUniqueId())) {
-            player.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + player.getDisplayName());
-        } else {
-            player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
-        }
+        Essentials.updateTabList(player);
 
         // permission setup
         PermissionAttachment attachment = player.addAttachment(plugin);
         plugin.playersPerms.put(player.getUniqueId(), attachment);
-        if (plugin.playersGroups.containsKey(player.getUniqueId()))
+        if (Essentials.playersGroups.containsKey(player.getUniqueId()))
         {
-            for (String group : plugin.playersGroups.get(player.getUniqueId()))
+            for (String group : Essentials.playersGroups.get(player.getUniqueId()))
             {
                 for (String perms : plugin.groupPermissions.get(group))
                 {

@@ -1,5 +1,6 @@
 package me.agronaut.essentials.events;
 
+import me.agronaut.essentials.Essentials;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -16,12 +17,12 @@ public class opingPlayer implements Listener {
         {
             String targetName = event.getMessage().split(" ")[1];
             Player target = Bukkit.getPlayerExact(targetName);
-            target.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + target.getDisplayName());
+            Essentials.updateTabList(target);
         } else if (event.getMessage().startsWith("/deop"))
         {
             String targetName = event.getMessage().split(" ")[1];
             Player target = Bukkit.getPlayerExact(targetName);
-            target.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + target.getDisplayName());
+            Essentials.updateTabList(target);
         }
     }
 }

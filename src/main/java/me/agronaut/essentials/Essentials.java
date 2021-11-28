@@ -39,7 +39,7 @@ public final class Essentials extends JavaPlugin {
     public ArrayList<UUID> hiddenPlayers = new ArrayList<>();
     public HashMap<UUID, Long> playersMoney = new HashMap<>();
     public HashMap<String, ArrayList<String>> groupPermissions = new HashMap<>();
-    public HashMap<UUID, ArrayList<String>> playersGroups = new HashMap<>();
+    public static HashMap<UUID, ArrayList<String>> playersGroups = new HashMap<>();
     public HashMap<UUID, PermissionAttachment> playersPerms = new HashMap<>();
 
     @Override
@@ -66,6 +66,8 @@ public final class Essentials extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new chat(), this);
         getServer().getPluginManager().registerEvents(new damage(this), this);
         getServer().getPluginManager().registerEvents(new opingPlayer(), this);
+        getServer().getPluginManager().registerEvents(new breakEvent(), this);
+        getServer().getPluginManager().registerEvents(new Interact(this), this);
 
 
         getLogger().info("save default config");
@@ -254,6 +256,19 @@ public final class Essentials extends JavaPlugin {
         } catch (IOException e) {
             getLogger().warning("Saving permissions file failed");
             e.printStackTrace();
+        }
+    }
+
+    public static void updateTabList(Player player)
+    {
+        if (player != null) {
+            if (player.isOp()) {
+                player.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + player.getDisplayName());
+            } else if (playersGroups.containsKey(player.getUniqueId())) {
+                player.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + player.getDisplayName());
+            } else {
+                player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
+            }
         }
     }
 }
