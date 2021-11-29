@@ -145,10 +145,12 @@ public final class Essentials extends JavaPlugin {
         getLogger().info("save permissions");
         for (String group : groupPermissions.keySet())
         {
+            getLogger().info(group + " group permission: " + groupPermissions.get(group).toString());
             permissionConfig.set("groups." + group, groupPermissions.get(group));
         }
         for (UUID player : playersGroups.keySet())
         {
+            getLogger().info(player.toString() + " permissions: " + playersGroups.get(player).toString());
             permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
         }
         savePermissions();
@@ -266,7 +268,7 @@ public final class Essentials extends JavaPlugin {
         if (player != null) {
             if (player.isOp()) {
                 player.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + player.getDisplayName());
-            } else if (playersGroups.containsKey(player.getUniqueId())) {
+            } else if (playersGroups.containsKey(player.getUniqueId()) && playersGroups.get(player.getUniqueId()).contains("user")) {
                 player.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + player.getDisplayName());
             } else {
                 player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
