@@ -151,6 +151,7 @@ public final class Essentials extends JavaPlugin {
         {
             permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
         }
+        savePermissions();
     }
 
     public void showPlayer(Player player) {
@@ -257,6 +258,19 @@ public final class Essentials extends JavaPlugin {
         } catch (IOException e) {
             getLogger().warning("Saving permissions file failed");
             e.printStackTrace();
+        }
+    }
+
+    public static void updateTabList(Player player)
+    {
+        if (player != null) {
+            if (player.isOp()) {
+                player.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + player.getDisplayName());
+            } else if (playersGroups.containsKey(player.getUniqueId())) {
+                player.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + player.getDisplayName());
+            } else {
+                player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
+            }
         }
     }
 }
