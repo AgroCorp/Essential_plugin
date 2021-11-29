@@ -37,6 +37,6 @@ commands:
     description: add or remove or list user permissions
     aliases: [pm]
   permissions-group:
-    usage: /permissions-group <add | addto | remove | removedfrom | list> <group> [permission | player]
+    usage: /permissions-group <add | addto | remove | removefrom | list> <group> [permission | player]
     description: add or remove or list group permissions
     aliases: [pmg]
