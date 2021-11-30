@@ -86,7 +86,7 @@ public final class Essentials extends JavaPlugin {
         {
             for (String key : moneyConfig.getConfigurationSection("money").getKeys(false))
             {
-                getLogger().info("Player UUID: " + key + ", money: " + String.valueOf(getConfig().getLong("money." + key + ".money")));
+                getLogger().info("Player UUID: " + key + ", money: " + moneyConfig.getLong("money." + key + ".money"));
                 playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
             }
         }
@@ -151,7 +151,9 @@ public final class Essentials extends JavaPlugin {
         for (UUID player : playersGroups.keySet())
         {
             getLogger().info(player.toString() + " permissions: " + playersGroups.get(player).toString());
-            permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+            if (playersGroups.get(player).size() > 0){
+                permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+            }
         }
         savePermissions();
     }
