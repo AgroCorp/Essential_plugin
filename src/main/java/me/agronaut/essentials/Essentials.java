@@ -69,6 +69,7 @@ public final class Essentials extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new breakEvent(), this);
         getServer().getPluginManager().registerEvents(new Interact(this), this);
 
+        getServer().getPluginManager().registerEvents(new LeaveEvent(this), this);
 
         getLogger().info("save default config");
         // default config save
@@ -85,7 +86,7 @@ public final class Essentials extends JavaPlugin {
         {
             for (String key : moneyConfig.getConfigurationSection("money").getKeys(false))
             {
-                getLogger().info("Player UUID: " + key + ", money: " + String.valueOf(getConfig().getLong("money." + key + ".money")));
+                getLogger().info("Player UUID: " + key + ", money: " + moneyConfig.getLong("money." + key + ".money"));
                 playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
             }
         }
@@ -144,12 +145,17 @@ public final class Essentials extends JavaPlugin {
         getLogger().info("save permissions");
         for (String group : groupPermissions.keySet())
         {
+            getLogger().info(group + " group permission: " + groupPermissions.get(group).toString());
             permissionConfig.set("groups." + group, groupPermissions.get(group));
         }
         for (UUID player : playersGroups.keySet())
         {
-            permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+            getLogger().info(player.toString() + " permissions: " + playersGroups.get(player).toString());
+            if (playersGroups.get(player).size() > 0){
+                permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+            }
         }
+        savePermissions();
     }
 
     public void showPlayer(Player player) {
@@ -264,7 +270,7 @@ public final class Essentials extends JavaPlugin {
         if (player != null) {
             if (player.isOp()) {
                 player.setPlayerListName(ChatColor.RED + "[Admin] " + ChatColor.RESET + player.getDisplayName());
-            } else if (playersGroups.containsKey(player.getUniqueId())) {
+            } else if (playersGroups.containsKey(player.getUniqueId()) && playersGroups.get(player.getUniqueId()).contains("user")) {
                 player.setPlayerListName(ChatColor.AQUA + "[Tag] " + ChatColor.RESET + player.getDisplayName());
             } else {
                 player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());

@@ -1,12 +1,16 @@
 package me.agronaut.essentials.commands;
 
 import me.agronaut.essentials.Essentials;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class PermissionGroupCommand implements CommandExecutor {
     private Essentials plugin;
@@ -40,10 +44,95 @@ public class PermissionGroupCommand implements CommandExecutor {
                     sender.sendMessage(ChatColor.YELLOW + args[1] + " has permissions:");
                     sender.sendMessage(ChatColor.AQUA + (sb.toString().length() > 0 ? sb.toString().substring(0, sb.toString().length() - 2) : ""));
                     return true;
+                } else if ("addto".equalsIgnoreCase(args[0]) || "removefrom".equalsIgnoreCase(args[0]) && args.length == 3)
+                {
+                    Player target = Bukkit.getPlayerExact(args[2]);
+                    String addToGroup = args[1];
+
+                    if (target == null) {sender.sendMessage(Essentials.playerNotFoundMsg); return true;}
+
+                    if ("addto".equalsIgnoreCase(args[0])) {
+                        if (Essentials.playersGroups.containsKey(target.getUniqueId())) {
+                            if (!Essentials.playersGroups.get(target.getUniqueId()).contains(addToGroup)) {
+                                Essentials.playersGroups.get(target.getUniqueId()).add(addToGroup);
+                                if (Essentials.playersGroups.containsKey(target.getUniqueId()))
+                                {
+                                    for (String iter : Essentials.playersGroups.get(target.getUniqueId()))
+                                    {
+                                        for (String perms : plugin.groupPermissions.get(iter))
+                                        {
+                                            plugin.getLogger().info("groups: " + iter);
+                                            plugin.getLogger().info(String.format("permission beallitasa %s: %s", target.getDisplayName(), perms));
+                                            plugin.playersPerms.get(target.getUniqueId()).setPermission(perms, true);
+                                        }
+                                    }
+                                }
+                                sender.sendMessage(ChatColor.YELLOW + "User " + target.getDisplayName() + " added to group: " + addToGroup);
+                            }
+                            else {
+                                sender.sendMessage(ChatColor.YELLOW + "This user already member of group: " + addToGroup);
+                            }
+                        } else
+                        {
+                            ArrayList<String> temp = new ArrayList<>();
+                            temp.add(addToGroup);
+                            Essentials.playersGroups.put(target.getUniqueId(), temp);
+                            sender.sendMessage(ChatColor.YELLOW + "User " + target.getDisplayName() + " added to group: " + addToGroup);
+                        }
+                    } else if ("removefrom".equalsIgnoreCase(args[0]))
+                    {
+                        if (Essentials.playersGroups.containsKey(target.getUniqueId()))
+                        {
+                            if (Essentials.playersGroups.get(target.getUniqueId()).contains(addToGroup))
+                            {
+                                if (Essentials.playersGroups.containsKey(target.getUniqueId()))
+                                {
+                                    for (String iter : Essentials.playersGroups.get(target.getUniqueId()))
+                                    {
+                                        for (String perms : plugin.groupPermissions.get(iter))
+                                        {
+                                            plugin.getLogger().info("groups: " + iter);
+                                            plugin.getLogger().info(String.format("permission beallitasa %s: %s", target.getDisplayName(), perms));
+                                            plugin.playersPerms.get(target.getUniqueId()).unsetPermission(perms);
+                                        }
+                                    }
+                                }
+                                Essentials.playersGroups.get(target.getUniqueId()).remove(addToGroup);
+                                sender.sendMessage(ChatColor.YELLOW + String.format("User %s removed from group: %s", target.getDisplayName(), addToGroup));
+                            }
+                            else
+                            {
+                                sender.sendMessage(ChatColor.YELLOW + String.format("User not in group: %s", addToGroup));
+                            }
+                        }
+                        else {
+                            sender.sendMessage(Essentials.playerNotFoundMsg);
+                        }
+                    }
+                    Essentials.updateTabList(target);
                 }
-            } else {sender.sendMessage(Essentials.playerNotFoundMsg);}
-            return false;
+            } else {sender.sendMessage(ChatColor.RED + "Group not found in database!");}
+            return true;
         }
         return true;
+    }
+
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args)
+    {
+        if (args.length == 0)
+        {
+            return new ArrayList<>(Arrays.asList("add", "addto", "remove", "removefrom", "list"));
+        } else if (args.length == 1)
+        {
+            return new ArrayList<>(plugin.groupPermissions.keySet());
+        }
+        else {
+            ArrayList<String> names = new ArrayList<>();
+            for (Player iter : Bukkit.getOnlinePlayers())
+            {
+                names.add(iter.getName());
+            }
+            return names;
+        }
     }
 }
