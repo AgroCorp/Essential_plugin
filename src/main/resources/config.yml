@@ -4,6 +4,8 @@ hello-submsg: "&2Szerveren épp &4%daytime% &2van"
 permission-msg: "You dont have permission!"
 player-not-found-msg: "Player not found!"
 
+money-sign: "$"
+
 use-db: false
 db:
   host: db

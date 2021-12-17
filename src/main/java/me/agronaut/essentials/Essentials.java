@@ -35,6 +35,8 @@ public final class Essentials extends JavaPlugin {
 
     public static String permissionMsg;
     public static String playerNotFoundMsg;
+    public static String moneySign;
+    public final static String onlyPlayer = ChatColor.RED + "This command only can use players";
 
     public ArrayList<UUID> hiddenPlayers = new ArrayList<>();
     public HashMap<UUID, Long> playersMoney = new HashMap<>();
@@ -58,6 +60,7 @@ public final class Essentials extends JavaPlugin {
         getCommand("scoreboard").setExecutor(new Scoreboard(this));
         getCommand("permissions").setExecutor(new PermissionCommand(this));
         getCommand("permissions-group").setExecutor(new PermissionGroupCommand(this));
+        getCommand("money").setExecutor(new Money(this));
 
         getLogger().info("events initialize");
         // register Listeners
@@ -77,8 +80,11 @@ public final class Essentials extends JavaPlugin {
         createMoneyConfig();
         createPermissionConfig();
         saveDefaultConfig();
+
+        //statics
         permissionMsg = ChatColor.RED + getConfig().getString("permission-msg");
         playerNotFoundMsg = ChatColor.RED + getConfig().getString("player-not-found-msg");
+        moneySign = getConfig().getString("money-sign");
 
         getLogger().info("playersMoney initialize");
         // read in players money

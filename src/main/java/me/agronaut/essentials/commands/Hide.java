@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Hide implements CommandExecutor {
-    Essentials plugin;
+    private final Essentials plugin;
 
     public Hide(Essentials plugin) {
         this.plugin = plugin;

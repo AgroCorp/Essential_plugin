@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
 public class Scoreboard implements CommandExecutor {
-    Essentials plugin;
+    private final Essentials plugin;
 
     public Scoreboard(Essentials plugin) {
         this.plugin = plugin;

@@ -40,3 +40,6 @@ commands:
     usage: /permissions-group <add | addto | remove | removefrom | list> <group> [permission | player]
     description: add or remove or list group permissions
     aliases: [pmg]
+  money:
+    usage: /money [player]
+    description: show your money or given player's money

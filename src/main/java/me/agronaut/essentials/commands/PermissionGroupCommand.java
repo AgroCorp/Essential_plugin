@@ -13,7 +13,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PermissionGroupCommand implements CommandExecutor {
-    private Essentials plugin;
+    private final Essentials plugin;
 
     public PermissionGroupCommand(Essentials plugin) {
         this.plugin = plugin;
