@@ -43,3 +43,6 @@ commands:
   money:
     usage: /money [player]
     description: show your money or given player's money
+  pay:
+    usage: /pay <amount | confirm | decline> <player>
+    description: pay money for player

@@ -9,12 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class Money implements CommandExecutor {
-    private final Essentials plugin;
-
-    public Money(Essentials plugin) {
-        this.plugin = plugin;
-    }
-
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         if (strings.length == 0) // /money
@@ -24,7 +18,7 @@ public class Money implements CommandExecutor {
                 Player player = (Player) commandSender;
 
                 if(player.hasPermission("essentials.money.self"))
-                    player.sendMessage(ChatColor.YELLOW + "Your balance: " + (plugin.playersMoney.get(player.getUniqueId()) != null ? plugin.playersMoney.get(player.getUniqueId()) : 0) + Essentials.moneySign);
+                    player.sendMessage(ChatColor.YELLOW + "Your balance: " + (Essentials.playersMoney.get(player.getUniqueId()) != null ? Essentials.playersMoney.get(player.getUniqueId()) : 0) + Essentials.moneySign);
                 else
                     player.sendMessage(Essentials.permissionMsg);
             }
@@ -39,7 +33,7 @@ public class Money implements CommandExecutor {
                 if (target != null)
                 {
                     if (player.hasPermission("essentials.money.other"))
-                        player.sendMessage(ChatColor.YELLOW + target.getDisplayName() +"'s balance: " + (plugin.playersMoney.get(target.getUniqueId()) != null ? plugin.playersMoney.get(target.getUniqueId()) : 0) + Essentials.moneySign);
+                        player.sendMessage(ChatColor.YELLOW + target.getDisplayName() +"'s balance: " + (Essentials.playersMoney.get(target.getUniqueId()) != null ? Essentials.playersMoney.get(target.getUniqueId()) : 0) + Essentials.moneySign);
                     else
                         player.sendMessage(Essentials.permissionMsg);
                 } else player.sendMessage(Essentials.playerNotFoundMsg);

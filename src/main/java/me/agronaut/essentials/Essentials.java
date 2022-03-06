@@ -1,5 +1,6 @@
 package me.agronaut.essentials;
 
+import me.agronaut.essentials.Classes.Payment;
 import me.agronaut.essentials.Classes.SQLcontroller;
 import me.agronaut.essentials.Classes.baseScoreBoard;
 import me.agronaut.essentials.commands.*;
@@ -16,7 +17,9 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
+import org.bukkit.plugin.PluginDescriptionFile;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.java.JavaPluginLoader;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -36,13 +39,24 @@ public final class Essentials extends JavaPlugin {
     public static String permissionMsg;
     public static String playerNotFoundMsg;
     public static String moneySign;
+    public static String helloMsg;
+    public static String helloSubMsg;
     public final static String onlyPlayer = ChatColor.RED + "This command only can use players";
 
-    public ArrayList<UUID> hiddenPlayers = new ArrayList<>();
-    public HashMap<UUID, Long> playersMoney = new HashMap<>();
-    public HashMap<String, ArrayList<String>> groupPermissions = new HashMap<>();
+    public static ArrayList<UUID> hiddenPlayers = new ArrayList<>();
+    public static HashMap<UUID, Long> playersMoney = new HashMap<>();
+    public static HashMap<String, ArrayList<String>> groupPermissions = new HashMap<>();
     public static HashMap<UUID, ArrayList<String>> playersGroups = new HashMap<>();
-    public HashMap<UUID, PermissionAttachment> playersPerms = new HashMap<>();
+    public static HashMap<UUID, PermissionAttachment> playersPerms = new HashMap<>();
+    public static ArrayList<Payment> payments = new ArrayList<>();
+
+    public Essentials() {
+        super();
+    }
+
+    protected Essentials(JavaPluginLoader loader, PluginDescriptionFile descriptionFile, File dataFolder, File file) {
+        super(loader, descriptionFile, dataFolder, file);
+    }
 
     @Override
     public void onEnable() {
@@ -54,29 +68,32 @@ public final class Essentials extends JavaPlugin {
         getCommand("tph").setExecutor(new Tph());
         getCommand("feed").setExecutor(new Feed());
         getCommand("fly").setExecutor(new Fly());
-        getCommand("hide").setExecutor(new Hide(this));
+        getCommand("hide").setExecutor(new Hide());
         getCommand("heal").setExecutor(new Heal());
         getCommand("inventory").setExecutor(new Inventory());
-        getCommand("scoreboard").setExecutor(new Scoreboard(this));
-        getCommand("permissions").setExecutor(new PermissionCommand(this));
-        getCommand("permissions-group").setExecutor(new PermissionGroupCommand(this));
-        getCommand("money").setExecutor(new Money(this));
+        getCommand("scoreboard").setExecutor(new Scoreboard());
+        getCommand("permissions").setExecutor(new PermissionCommand());
+        getCommand("permissions-group").setExecutor(new PermissionGroupCommand());
+        getCommand("money").setExecutor(new Money());
+        getCommand("pay").setExecutor(new Pay());
 
         getLogger().info("events initialize");
         // register Listeners
-        getServer().getPluginManager().registerEvents(new join(this), this);
-        getServer().getPluginManager().registerEvents(new move(this), this);
+        getServer().getPluginManager().registerEvents(new join(), this);
+        getServer().getPluginManager().registerEvents(new move(), this);
         getServer().getPluginManager().registerEvents(new chat(), this);
-        getServer().getPluginManager().registerEvents(new damage(this), this);
+        getServer().getPluginManager().registerEvents(new damage(), this);
         getServer().getPluginManager().registerEvents(new opingPlayer(), this);
         getServer().getPluginManager().registerEvents(new breakEvent(), this);
-        getServer().getPluginManager().registerEvents(new Interact(this), this);
+        getServer().getPluginManager().registerEvents(new Interact(), this);
+        getServer().getPluginManager().registerEvents(new PlaceBlock(),this);
 
-        getServer().getPluginManager().registerEvents(new LeaveEvent(this), this);
+        getServer().getPluginManager().registerEvents(new LeaveEvent(), this);
 
         getLogger().info("save default config");
         // default config save
         getConfig().options().copyDefaults();
+
         createMoneyConfig();
         createPermissionConfig();
         saveDefaultConfig();
@@ -85,48 +102,46 @@ public final class Essentials extends JavaPlugin {
         permissionMsg = ChatColor.RED + getConfig().getString("permission-msg");
         playerNotFoundMsg = ChatColor.RED + getConfig().getString("player-not-found-msg");
         moneySign = getConfig().getString("money-sign");
+        helloMsg = getConfig().getString("hello-msg");
+        helloSubMsg = getConfig().getString("hello-submsg");
 
         getLogger().info("playersMoney initialize");
         // read in players money
-        if (moneyConfig.getConfigurationSection("money") != null)
-        {
-            for (String key : moneyConfig.getConfigurationSection("money").getKeys(false))
-            {
+        if (moneyConfig.getConfigurationSection("money") != null) {
+            for (String key : moneyConfig.getConfigurationSection("money").getKeys(false)) {
                 getLogger().info("Player UUID: " + key + ", money: " + moneyConfig.getLong("money." + key + ".money"));
                 playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
             }
         }
 
+
         // permissions beolvasasa
-        for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false))
-        {
+        for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false)) {
             // read in groups permissions
             ArrayList<String> listOfPermissions = new ArrayList<>(permissionConfig.getStringList("groups." + group));
             groupPermissions.put(group, listOfPermissions);
         }
 
-        for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false))
-        {
+        for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false)) {
             ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
             playersGroups.put(UUID.fromString(playerUUID), groups);
         }
+
 
         getLogger().info("runnable initialize");
         // add money after 30 minute
         new BukkitRunnable() {
             @Override
             public void run() {
-                for (Player iter : getServer().getOnlinePlayers())
-                {
+                for (Player iter : getServer().getOnlinePlayers()) {
                     iter.sendMessage(ChatColor.YELLOW + "online idod miatt kapsz 100$-t");
-                    if (playersMoney.containsKey(iter.getUniqueId()))
-                    {
+                    if (playersMoney.containsKey(iter.getUniqueId())) {
                         playersMoney.put(iter.getUniqueId(), playersMoney.get(iter.getUniqueId()) + 100L);
                     } else {
                         playersMoney.put(iter.getUniqueId(), 100L);
                     }
                     // after add money generate new scoreboard to players
-                    baseScoreBoard board = new baseScoreBoard(Essentials.this);
+                    baseScoreBoard board = new baseScoreBoard();
                     board.showScoreboard(iter);
                 }
             }
@@ -136,11 +151,9 @@ public final class Essentials extends JavaPlugin {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-
         getLogger().info("save playersMoney");
         //save playersMoney
-        for (Map.Entry<UUID, Long> iter : playersMoney.entrySet())
-        {
+        for (Map.Entry<UUID, Long> iter : playersMoney.entrySet()) {
             getLogger().info("player UUID: " + iter.getKey().toString() + ", money: " + iter.getValue());
             moneyConfig.set("money." + iter.getKey().toString() + ".money", iter.getValue());
         }
@@ -149,34 +162,20 @@ public final class Essentials extends JavaPlugin {
 
         // save permissions
         getLogger().info("save permissions");
-        for (String group : groupPermissions.keySet())
-        {
+        for (String group : groupPermissions.keySet()) {
             getLogger().info(group + " group permission: " + groupPermissions.get(group).toString());
             permissionConfig.set("groups." + group, groupPermissions.get(group));
         }
-        for (UUID player : playersGroups.keySet())
-        {
+        for (UUID player : playersGroups.keySet()) {
             getLogger().info(player.toString() + " permissions: " + playersGroups.get(player).toString());
-            if (playersGroups.get(player).size() > 0){
+            if (playersGroups.get(player).size() > 0) {
                 permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
             }
         }
         savePermissions();
     }
 
-    public void showPlayer(Player player) {
-        for (Player online : getServer().getOnlinePlayers()) {
-            online.showPlayer(this, player);
-        }
-    }
-
-    public void hidePlayer(Player player) {
-        for (Player online : getServer().getOnlinePlayers()) {
-            online.hidePlayer(this, player);
-        }
-    }
-
-    public void actionBar(Player player) {
+    public static void actionBar(Player player) {
         for (Entity ent : player.getNearbyEntities(5,5,5))
         {
             if (ent instanceof LivingEntity && getLookingAt(player, ent))
@@ -191,7 +190,7 @@ public final class Essentials extends JavaPlugin {
         }
     }
 
-    private ChatColor getHealthColor(double health, double max) {
+    private static ChatColor getHealthColor(double health, double max) {
         if (health <= max * 0.75) return ChatColor.YELLOW;
         else if (health <= max * 0.5) return ChatColor.GOLD;
         else if (health <= max * 0.25) return ChatColor.RED;
@@ -199,11 +198,11 @@ public final class Essentials extends JavaPlugin {
         else return ChatColor.GREEN;
     }
 
-    private String healthToSquare(double health, double max) {
+    private static String healthToSquare(double health, double max) {
         return Character.toString((char) 9632).repeat((int) (health / max * 10));
     }
 
-    private boolean getLookingAt(Player player, Entity entity) {
+    private static boolean getLookingAt(Player player, Entity entity) {
         Location eye = player.getEyeLocation();
         Vector toEntity = entity.getLocation().toVector().subtract(eye.toVector());
         double dot = toEntity.normalize().dot(eye.getDirection());

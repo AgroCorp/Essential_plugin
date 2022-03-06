@@ -1,6 +1,7 @@
 package me.agronaut.essentials.events;
 
 import me.agronaut.essentials.Essentials;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -10,12 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 public class damage implements Listener {
-    Essentials plugin;
-
-    public damage(Essentials plugin) {
-        this.plugin = plugin;
-    }
-
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event)
     {
@@ -26,7 +21,7 @@ public class damage implements Listener {
             {
                 if (event.getEntity() instanceof LivingEntity)
                 {
-                    plugin.actionBar(player);
+                    Essentials.actionBar(player);
                 }
             }
             else

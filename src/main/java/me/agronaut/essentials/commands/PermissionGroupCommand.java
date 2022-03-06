@@ -11,18 +11,15 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Logger;
 
 public class PermissionGroupCommand implements CommandExecutor {
-    private final Essentials plugin;
-
-    public PermissionGroupCommand(Essentials plugin) {
-        this.plugin = plugin;
-    }
+    private final Logger logger = Bukkit.getServer().getLogger();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
         if (sender.hasPermission("essentials.permissions")) {
-            ArrayList<String> group = plugin.groupPermissions.get(args[1]);
+            ArrayList<String> group = Essentials.groupPermissions.get(args[1]);
             if (group != null) {
                 if ((args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("remove") && args.length == 3)) {
                     String param = args[0];
@@ -59,11 +56,11 @@ public class PermissionGroupCommand implements CommandExecutor {
                                 {
                                     for (String iter : Essentials.playersGroups.get(target.getUniqueId()))
                                     {
-                                        for (String perms : plugin.groupPermissions.get(iter))
+                                        for (String perms : Essentials.groupPermissions.get(iter))
                                         {
-                                            plugin.getLogger().info("groups: " + iter);
-                                            plugin.getLogger().info(String.format("permission beallitasa %s: %s", target.getDisplayName(), perms));
-                                            plugin.playersPerms.get(target.getUniqueId()).setPermission(perms, true);
+                                            logger.info("groups: " + iter);
+                                            logger.info(String.format("permission beallitasa %s: %s", target.getDisplayName(), perms));
+                                            Essentials.playersPerms.get(target.getUniqueId()).setPermission(perms, true);
                                         }
                                     }
                                 }
@@ -89,11 +86,11 @@ public class PermissionGroupCommand implements CommandExecutor {
                                 {
                                     for (String iter : Essentials.playersGroups.get(target.getUniqueId()))
                                     {
-                                        for (String perms : plugin.groupPermissions.get(iter))
+                                        for (String perms : Essentials.groupPermissions.get(iter))
                                         {
-                                            plugin.getLogger().info("groups: " + iter);
-                                            plugin.getLogger().info(String.format("permission beallitasa %s: %s", target.getDisplayName(), perms));
-                                            plugin.playersPerms.get(target.getUniqueId()).unsetPermission(perms);
+                                            logger.info("groups: " + iter);
+                                            logger.info(String.format("permission beallitasa %s: %s", target.getDisplayName(), perms));
+                                            Essentials.playersPerms.get(target.getUniqueId()).unsetPermission(perms);
                                         }
                                     }
                                 }
@@ -124,7 +121,7 @@ public class PermissionGroupCommand implements CommandExecutor {
             return new ArrayList<>(Arrays.asList("add", "addto", "remove", "removefrom", "list"));
         } else if (args.length == 1)
         {
-            return new ArrayList<>(plugin.groupPermissions.keySet());
+            return new ArrayList<>(Essentials.groupPermissions.keySet());
         }
         else {
             ArrayList<String> names = new ArrayList<>();

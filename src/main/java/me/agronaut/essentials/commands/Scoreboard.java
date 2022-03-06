@@ -10,12 +10,10 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.*;
 
-public class Scoreboard implements CommandExecutor {
-    private final Essentials plugin;
+import java.util.logging.Logger;
 
-    public Scoreboard(Essentials plugin) {
-        this.plugin = plugin;
-    }
+public class Scoreboard implements CommandExecutor {
+    private final Logger logger = Bukkit.getServer().getLogger();
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -25,12 +23,12 @@ public class Scoreboard implements CommandExecutor {
             if(player.hasPermission("essentials.scoreboard")) {
                 ScoreboardManager manager = Bukkit.getScoreboardManager();
                 if (manager != null) {
-                    baseScoreBoard baseScoreBoard = new baseScoreBoard(plugin);
+                    baseScoreBoard baseScoreBoard = new baseScoreBoard();
                     if (player.getScoreboard().getObjective(DisplaySlot.SIDEBAR) == null) {
-                        plugin.getLogger().info("Scoreboard nincs tehat show van meghivva");
+                        logger.info("Scoreboard nincs tehat show van meghivva");
                         baseScoreBoard.showScoreboard(player, true);
                     } else {
-                        plugin.getLogger().info("Scoreboard megnyitva tehat toroljuk azt");
+                        logger.info("Scoreboard megnyitva tehat toroljuk azt");
                         baseScoreBoard.removeScoreboard(player);
                     }
                 } else {

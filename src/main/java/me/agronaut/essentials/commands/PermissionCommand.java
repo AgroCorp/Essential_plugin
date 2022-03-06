@@ -9,11 +9,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class PermissionCommand implements CommandExecutor {
-    private final Essentials plugin;
-
-    public PermissionCommand(Essentials plugin) {
-        this.plugin = plugin;
-    }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label,  String[] args) {
@@ -25,17 +20,17 @@ public class PermissionCommand implements CommandExecutor {
                     String permission = args[2];
 
                     if ("add".equalsIgnoreCase(param)) {
-                        plugin.playersPerms.get(player.getUniqueId()).setPermission(permission, true);
+                        Essentials.playersPerms.get(player.getUniqueId()).setPermission(permission, true);
                         sender.sendMessage(ChatColor.YELLOW + permission + " permission added to user: " + player.getDisplayName());
                     } else if ("remove".equalsIgnoreCase(param)) {
-                        plugin.playersPerms.get(player.getUniqueId()).unsetPermission(permission);
+                        Essentials.playersPerms.get(player.getUniqueId()).unsetPermission(permission);
                         sender.sendMessage(ChatColor.YELLOW + permission + " permission removed from user: " + player.getDisplayName());
                     }
                     return true;
                 } else if ("list".equalsIgnoreCase(args[0]) && args.length == 2) {
                     StringBuilder sb = new StringBuilder();
-                    for (String perm : plugin.playersPerms.get(player.getUniqueId()).getPermissions().keySet()) {
-                        if (plugin.playersPerms.get(player.getUniqueId()).getPermissions().get(perm)) {
+                    for (String perm : Essentials.playersPerms.get(player.getUniqueId()).getPermissions().keySet()) {
+                        if (Essentials.playersPerms.get(player.getUniqueId()).getPermissions().get(perm)) {
                             sb.append(perm + ", ");
                         }
                     }

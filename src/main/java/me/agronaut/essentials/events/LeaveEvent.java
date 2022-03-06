@@ -7,16 +7,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class LeaveEvent implements Listener {
-    Essentials plugin;
-
-    public LeaveEvent(Essentials plugin) {
-        this.plugin = plugin;
-    }
 
     @EventHandler
     public void onLeave(PlayerQuitEvent event)
     {
         Player player = event.getPlayer();
-        plugin.playersPerms.remove(player.getUniqueId());
+        Essentials.playersPerms.remove(player.getUniqueId());
+        Essentials.hiddenPlayers.remove(player.getUniqueId());
     }
 }

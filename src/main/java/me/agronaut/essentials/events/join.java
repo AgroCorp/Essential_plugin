@@ -12,20 +12,20 @@ import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.scoreboard.*;
 
-public class join implements Listener {
-    Essentials plugin;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.logging.Logger;
 
-    public join(Essentials plugin) {
-        this.plugin = plugin;
-    }
+public class join implements Listener {
+    private final Logger logger = Bukkit.getLogger();
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         // Title when join to server
-        String title = plugin.getConfig().getString("hello-msg");
-        String subTitle = plugin.getConfig().getString("hello-submsg");
+        String title = Essentials.helloMsg;
+        String subTitle = Essentials.helloSubMsg;
 
         if (title.contains("%player%")) {
             title = title.replaceAll("%player%", player.getDisplayName());
@@ -42,32 +42,32 @@ public class join implements Listener {
 
         player.sendTitle(ChatColor.translateAlternateColorCodes('&', title),ChatColor.translateAlternateColorCodes('&', subTitle),10,70,20);
 
-        // check player visibile
-        if (plugin.hiddenPlayers.contains(player.getUniqueId())) {
-            plugin.hidePlayer(player);
-        }
-
         // edit tab menu name
         Essentials.updateTabList(player);
 
         // permission setup
-        PermissionAttachment attachment = player.addAttachment(plugin);
-        plugin.playersPerms.put(player.getUniqueId(), attachment);
+        PermissionAttachment attachment = player.addAttachment(Bukkit.getPluginManager().getPlugin("Essentials"));
+        Essentials.playersPerms.put(player.getUniqueId(), attachment);
         if (Essentials.playersGroups.containsKey(player.getUniqueId()))
         {
             for (String group : Essentials.playersGroups.get(player.getUniqueId()))
             {
-                for (String perms : plugin.groupPermissions.get(group))
+                for (String perms : Essentials.groupPermissions.get(group))
                 {
-                    plugin.getLogger().info("groups: " + group);
-                    plugin.getLogger().info(String.format("permission beallitasa %s: %s", player.getDisplayName(), perms));
-                    plugin.playersPerms.get(player.getUniqueId()).setPermission(perms, true);
+                    logger.info("groups: " + group);
+                    logger.info(String.format("permission beallitasa %s: %s", player.getDisplayName(), perms));
+                    Essentials.playersPerms.get(player.getUniqueId()).setPermission(perms, true);
                 }
             }
         }
+        // if whitelisted automatically add to user group
+        if (player.isWhitelisted() && !Essentials.playersGroups.containsKey(player.getUniqueId()))
+        {
+            Essentials.playersGroups.put(player.getUniqueId(), new ArrayList<>(Arrays.asList("user")));
+        }
 
         // scoreboard
-        baseScoreBoard board = new baseScoreBoard(plugin);
+        baseScoreBoard board = new baseScoreBoard();
         board.showScoreboard(player);
 
     }

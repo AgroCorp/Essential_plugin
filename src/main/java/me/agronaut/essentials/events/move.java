@@ -15,14 +15,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.util.Vector;
 
 public class move implements Listener {
-    Essentials plugin;
-
-    public move(Essentials plugin) {
-        this.plugin = plugin;
-    }
-
     @EventHandler
     public void onMove(PlayerMoveEvent event) {
-        plugin.actionBar(event.getPlayer());
+        Essentials.actionBar(event.getPlayer());
     }
 }
