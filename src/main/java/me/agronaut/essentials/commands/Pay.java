@@ -9,18 +9,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class Pay implements CommandExecutor {
-    Essentials plugin;
-
+    private final Logger logger = Bukkit.getLogger();
 
     @Override
     public boolean onCommand(@org.jetbrains.annotations.NotNull CommandSender commandSender, @org.jetbrains.annotations.NotNull Command command, @org.jetbrains.annotations.NotNull String s, @org.jetbrains.annotations.NotNull String[] strings) {
         if (commandSender instanceof Player)
         {
             Player player = (Player) commandSender;
-
             if (strings.length == 2)
             {
                 Player target = Bukkit.getPlayerExact(strings[1]);
@@ -42,24 +42,26 @@ public class Pay implements CommandExecutor {
                         else if ("decline".equalsIgnoreCase(strings[0])) {
                             Essentials.payments.remove(pay);
                         } else {
-                            int amount;
-                            try{
-                                amount = Integer.parseInt(strings[0]);
-                            } catch (NumberFormatException e)
-                            {
-                                player.sendMessage(ChatColor.RED + "Bad amount please give an integer");
-                                return true;
-                            }
-                            Payment payment = new Payment(player, target,amount,false);
-                            //check payment not in accepting state
-                            if (Essentials.payments.contains(payment))
-                            {
-                                player.sendMessage(ChatColor.YELLOW + "Payment in confirmation state please decline or confirm first and after that start new payment");
-                                return true;
-                            }
-                            Essentials.payments.add(payment);
+                            player.sendMessage(ChatColor.YELLOW + "Payment not found, first you need to start payment to player and confirm that");
                         }
-                    } else player.sendMessage(ChatColor.YELLOW + "Payment not found, first you need to start payment to player and confirm that");
+                    } else {
+                        int amount;
+                        try{
+                            amount = Integer.parseInt(strings[0]);
+                        } catch (NumberFormatException e)
+                        {
+                            player.sendMessage(ChatColor.RED + "Bad amount please give an integer");
+                            return true;
+                        }
+                        Payment payment = new Payment(player, target,amount,false);
+                        //check payment not in accepting state
+                        if (Essentials.payments.contains(payment))
+                        {
+                            player.sendMessage(ChatColor.YELLOW + "Payment in confirmation state please decline or confirm first and after that start new payment");
+                            return true;
+                        }
+                        Essentials.payments.add(payment);
+                    }
                 } else player.sendMessage(Essentials.playerNotFoundMsg);
             } else if (strings.length == 1 && strings[0].equalsIgnoreCase("list"))
             {

@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.logging.Logger;
 
 public class join implements Listener {
-    private final Logger logger = Bukkit.getLogger();
+    private final Logger logger = Bukkit.getPluginManager().getPlugin("Essentials").getLogger();
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
@@ -48,7 +48,7 @@ public class join implements Listener {
         // permission setup
         PermissionAttachment attachment = player.addAttachment(Bukkit.getPluginManager().getPlugin("Essentials"));
         Essentials.playersPerms.put(player.getUniqueId(), attachment);
-        if (Essentials.playersGroups.containsKey(player.getUniqueId()))
+        if (Essentials.playersGroups.size() > 0 && Essentials.playersGroups.containsKey(player.getUniqueId()))
         {
             for (String group : Essentials.playersGroups.get(player.getUniqueId()))
             {
@@ -67,8 +67,11 @@ public class join implements Listener {
         }
 
         // scoreboard
-        baseScoreBoard board = new baseScoreBoard();
-        board.showScoreboard(player);
+        if(!Essentials.isJUnitTest()) {
+            logger.info("scoreboard");
+            baseScoreBoard board = new baseScoreBoard();
+            board.showScoreboard(player);
+        }
 
     }
 

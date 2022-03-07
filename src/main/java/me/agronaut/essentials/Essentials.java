@@ -93,17 +93,15 @@ public final class Essentials extends JavaPlugin {
         getLogger().info("save default config");
         // default config save
         getConfig().options().copyDefaults();
-
         createMoneyConfig();
-        createPermissionConfig();
         saveDefaultConfig();
 
         //statics
-        permissionMsg = ChatColor.RED + getConfig().getString("permission-msg");
-        playerNotFoundMsg = ChatColor.RED + getConfig().getString("player-not-found-msg");
-        moneySign = getConfig().getString("money-sign");
-        helloMsg = getConfig().getString("hello-msg");
-        helloSubMsg = getConfig().getString("hello-submsg");
+        permissionMsg = ChatColor.RED + getConfig().getString("permission-msg", "You dont have permission!");
+        playerNotFoundMsg = ChatColor.RED + getConfig().getString("player-not-found-msg", "Player not found!");
+        moneySign = getConfig().getString("money-sign", "$");
+        helloMsg = getConfig().getString("hello-msg", "&5Üdv &3%player% &5!");
+        helloSubMsg = getConfig().getString("hello-submsg", "&2Szerveren épp &4%daytime% &2van");
 
         getLogger().info("playersMoney initialize");
         // read in players money
@@ -114,65 +112,53 @@ public final class Essentials extends JavaPlugin {
             }
         }
 
+        if (!isJUnitTest()) {
+            createPermissionConfig();
 
-        // permissions beolvasasa
-        for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false)) {
-            // read in groups permissions
-            ArrayList<String> listOfPermissions = new ArrayList<>(permissionConfig.getStringList("groups." + group));
-            groupPermissions.put(group, listOfPermissions);
-        }
-
-        for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false)) {
-            ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
-            playersGroups.put(UUID.fromString(playerUUID), groups);
-        }
-
-
-        getLogger().info("runnable initialize");
-        // add money after 30 minute
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player iter : getServer().getOnlinePlayers()) {
-                    iter.sendMessage(ChatColor.YELLOW + "online idod miatt kapsz 100$-t");
-                    if (playersMoney.containsKey(iter.getUniqueId())) {
-                        playersMoney.put(iter.getUniqueId(), playersMoney.get(iter.getUniqueId()) + 100L);
-                    } else {
-                        playersMoney.put(iter.getUniqueId(), 100L);
-                    }
-                    // after add money generate new scoreboard to players
-                    baseScoreBoard board = new baseScoreBoard();
-                    board.showScoreboard(iter);
+            // permissions beolvasasa
+            if (permissionConfig.getConfigurationSection("groups") != null) {
+                for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false)) {
+                    // read in groups permissions
+                    ArrayList<String> listOfPermissions = new ArrayList<>(permissionConfig.getStringList("groups." + group));
+                    groupPermissions.put(group, listOfPermissions);
                 }
             }
-        }.runTaskTimer(this, 0L, 20 * 60 * 30);
+            if (permissionConfig.getConfigurationSection("users") != null) {
+                for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false)) {
+                    ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
+                    playersGroups.put(UUID.fromString(playerUUID), groups);
+                }
+            }
+        }
     }
 
     @Override
     public void onDisable() {
         // Plugin shutdown logic
-        getLogger().info("save playersMoney");
-        //save playersMoney
-        for (Map.Entry<UUID, Long> iter : playersMoney.entrySet()) {
-            getLogger().info("player UUID: " + iter.getKey().toString() + ", money: " + iter.getValue());
-            moneyConfig.set("money." + iter.getKey().toString() + ".money", iter.getValue());
-        }
-        saveMoneyConfig();
-
-
-        // save permissions
-        getLogger().info("save permissions");
-        for (String group : groupPermissions.keySet()) {
-            getLogger().info(group + " group permission: " + groupPermissions.get(group).toString());
-            permissionConfig.set("groups." + group, groupPermissions.get(group));
-        }
-        for (UUID player : playersGroups.keySet()) {
-            getLogger().info(player.toString() + " permissions: " + playersGroups.get(player).toString());
-            if (playersGroups.get(player).size() > 0) {
-                permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+        if(!isJUnitTest()) {
+            getLogger().info("save playersMoney");
+            //save playersMoney
+            for (Map.Entry<UUID, Long> iter : playersMoney.entrySet()) {
+                getLogger().info("player UUID: " + iter.getKey().toString() + ", money: " + iter.getValue());
+                moneyConfig.set("money." + iter.getKey().toString() + ".money", iter.getValue());
             }
+            saveMoneyConfig();
+
+
+            // save permissions
+            getLogger().info("save permissions");
+            for (String group : groupPermissions.keySet()) {
+                getLogger().info(group + " group permission: " + groupPermissions.get(group).toString());
+                permissionConfig.set("groups." + group, groupPermissions.get(group));
+            }
+            for (UUID player : playersGroups.keySet()) {
+                getLogger().info(player.toString() + " permissions: " + playersGroups.get(player).toString());
+                if (playersGroups.get(player).size() > 0) {
+                    permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
+                }
+            }
+            savePermissions();
         }
-        savePermissions();
     }
 
     public static void actionBar(Player player) {
@@ -224,13 +210,7 @@ public final class Essentials extends JavaPlugin {
         moneyConfigFile = new File(getDataFolder(), "money.yml");
         if (!moneyConfigFile.exists())
         {
-            if (moneyConfigFile.getParentFile().mkdirs())
-            {
-                saveResource("money.yml", false);
-            } else
-            {
-                getLogger().warning("failed to create folders and save money.yml");
-            }
+            saveResource("money.yml", false);
         }
 
         moneyConfig = new YamlConfiguration();
@@ -281,5 +261,14 @@ public final class Essentials extends JavaPlugin {
                 player.setPlayerListName(ChatColor.GREEN + "[Vendeg] " + ChatColor.RESET + player.getDisplayName());
             }
         }
+    }
+
+    public static boolean isJUnitTest() {
+        for (StackTraceElement element : Thread.currentThread().getStackTrace()) {
+            if (element.getClassName().startsWith("org.junit.")) {
+                return true;
+            }
+        }
+        return false;
     }
 }
