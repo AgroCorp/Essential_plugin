@@ -2,6 +2,7 @@ package me.agronaut.essentials;
 
 import me.agronaut.essentials.Classes.SQLcontroller;
 import me.agronaut.essentials.Classes.baseScoreBoard;
+import me.agronaut.essentials.Utils.HibernateUtils;
 import me.agronaut.essentials.commands.*;
 import me.agronaut.essentials.events.*;
 import net.md_5.bungee.api.ChatMessageType;
@@ -18,14 +19,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.FileUtil;
 import org.bukkit.util.Vector;
+import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 public final class Essentials extends JavaPlugin {
     private File moneyConfigFile;
@@ -74,35 +82,44 @@ public final class Essentials extends JavaPlugin {
         getLogger().info("save default config");
         // default config save
         getConfig().options().copyDefaults();
-        createMoneyConfig();
-        createPermissionConfig();
         saveDefaultConfig();
         permissionMsg = ChatColor.RED + getConfig().getString("permission-msg");
         playerNotFoundMsg = ChatColor.RED + getConfig().getString("player-not-found-msg");
 
-        getLogger().info("playersMoney initialize");
-        // read in players money
-        if (moneyConfig.getConfigurationSection("money") != null)
-        {
-            for (String key : moneyConfig.getConfigurationSection("money").getKeys(false))
-            {
-                getLogger().info("Player UUID: " + key + ", money: " + moneyConfig.getLong("money." + key + ".money"));
-                playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
+        if (getConfig().getBoolean("use-db") || true) {
+            getLogger().info("init Hibernate");
+            String ip = getConfig().getString("db.host");
+            String username = getConfig().getString("db.user");
+            String password = getConfig().getString("db.pw");
+            String database = getConfig().getString("db.db");
+            int port = getConfig().getInt("db.port");
+            HibernateUtils.initialize(ip, username, password, port, database);
+        }
+        else {
+            createMoneyConfig();
+            createPermissionConfig();
+
+
+            getLogger().info("playersMoney initialize");
+            // read in players money
+            if (moneyConfig.getConfigurationSection("money") != null) {
+                for (String key : moneyConfig.getConfigurationSection("money").getKeys(false)) {
+                    getLogger().info("Player UUID: " + key + ", money: " + moneyConfig.getLong("money." + key + ".money"));
+                    playersMoney.put(UUID.fromString(key), moneyConfig.getLong("money." + key + ".money"));
+                }
             }
-        }
 
-        // permissions beolvasasa
-        for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false))
-        {
-            // read in groups permissions
-            ArrayList<String> listOfPermissions = new ArrayList<>(permissionConfig.getStringList("groups." + group));
-            groupPermissions.put(group, listOfPermissions);
-        }
+            // permissions beolvasasa
+            for (String group : permissionConfig.getConfigurationSection("groups").getKeys(false)) {
+                // read in groups permissions
+                ArrayList<String> listOfPermissions = new ArrayList<>(permissionConfig.getStringList("groups." + group));
+                groupPermissions.put(group, listOfPermissions);
+            }
 
-        for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false))
-        {
-            ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
-            playersGroups.put(UUID.fromString(playerUUID), groups);
+            for (String playerUUID : permissionConfig.getConfigurationSection("users").getKeys(false)) {
+                ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
+                playersGroups.put(UUID.fromString(playerUUID), groups);
+            }
         }
 
         getLogger().info("runnable initialize");
@@ -239,16 +256,30 @@ public final class Essentials extends JavaPlugin {
         }
     }
 
-    private void createPermissionConfig()
-    {
+    private void createPermissionConfig() {
         permissionFile = new File(getServer().getWorldContainer(), "permissions.yml");
         permissionConfig = new YamlConfiguration();
 
-        try
+        // if permissions.yml empty save a predefined resource to file
+        if(permissionFile.length() == 0)
         {
+            try {
+                getLogger().info("saving default permissions.yml");
+                InputStream is = getResource("permissions.yml");
+                FileOutputStream fos = new FileOutputStream(permissionFile);
+
+                assert is != null;
+                fos.write(is.readAllBytes());
+                fos.flush();
+                fos.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        try {
             permissionConfig.load(permissionFile);
-        } catch (IOException | InvalidConfigurationException e)
-        {
+        } catch (IOException | InvalidConfigurationException e) {
             getLogger().warning("hiba a permission config inicializalasa kozben");
             e.printStackTrace();
         }

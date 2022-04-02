@@ -1,0 +1,1 @@
+cp target/Essentials-1.0-Snapshot.jar ~/Downloads/minecraft\ server/plugins/Essentials-1.0-SNAPSHOT.jar

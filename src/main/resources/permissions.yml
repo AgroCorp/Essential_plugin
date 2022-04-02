@@ -1,0 +1,10 @@
+groups:
+  user:
+    - essentials_heal_self
+    - essentials_feed_self
+    - essentials_break
+    - essentials_place
+
+users:
+  58e14a13-b8fd-3f60-afc9-a8705e5528d7:
+    group: user

@@ -4,10 +4,10 @@ hello-submsg: "&2Szerveren épp &4%daytime% &2van"
 permission-msg: "You dont have permission!"
 player-not-found-msg: "Player not found!"
 
-use-db: false
+use-db: true
 db:
-  host: db
+  host: 192.168.2.55
   port: 3306
-  db: minecraft
-  user: gaborka98
+  db: Essentials_plugin
+  user: admin
   pw: Gaborka11
