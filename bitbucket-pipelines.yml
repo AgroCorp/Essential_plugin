@@ -11,7 +11,7 @@ pipelines:
   default:
     - parallel:
         - step:
-            name: Build and Test
+            name: Test
             caches:
               - maven
             script:
@@ -26,8 +26,13 @@ pipelines:
               # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
               - pipe: atlassian/git-secrets-scan:0.5.1
     - step:
+        name: Package
+        caches:
+          - maven
         script:
-          - pipe: atlassian/bitbucket-upload-file:0.1.2
+          - sed -i "s/%versionNumber%/1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT/g" pom.xml
+          - mvn package
+          - pipe: atlassian/bitbucket-upload-file:0.3.2
             variables:
               BITBUCKET_USERNAME: $BITBUCKET_USERNAME
               BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
