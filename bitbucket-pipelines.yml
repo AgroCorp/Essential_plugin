@@ -25,15 +25,18 @@ pipelines:
               # Run a security scan for sensitive data.
               # See more security tools at https://bitbucket.org/product/features/pipelines/integrations?&category=security
               - pipe: atlassian/git-secrets-scan:0.5.1
-    - step:
-        name: Package
-        caches:
-          - maven
-        script:
-          - sed -i "s/%versionNumber%/1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT/g" pom.xml
-          - mvn package
-          - pipe: atlassian/bitbucket-upload-file:0.3.2
-            variables:
-              BITBUCKET_USERNAME: $BITBUCKET_USERNAME
-              BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
-              FILENAME: "target/Essentials-1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT.jar"
+
+  branches:
+    master:
+      - step:
+          name: Package
+          caches:
+            - maven
+          script:
+            - sed -i "s/%versionNumber%/1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT/g" pom.xml
+            - mvn package
+            - pipe: atlassian/bitbucket-upload-file:0.3.2
+              variables:
+                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
+                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                FILENAME: "target/Essentials-1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT.jar"
