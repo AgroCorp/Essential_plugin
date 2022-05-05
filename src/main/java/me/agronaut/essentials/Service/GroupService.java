@@ -1,12 +1,12 @@
 package me.agronaut.essentials.Service;
 
-import me.agronaut.essentials.DAO.Groups;
+import me.agronaut.essentials.DAO.PermissionGroup;
 import me.agronaut.essentials.Utils.HibernateUtils;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 
 public class GroupService {
-    public boolean save(Groups group)
+    public boolean save(PermissionGroup group)
     {
         Session session  = null;
         boolean res = true;

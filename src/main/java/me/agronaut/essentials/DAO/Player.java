@@ -1,24 +1,27 @@
 package me.agronaut.essentials.DAO;
 
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
+import java.util.UUID;
 
 @Getter
 @Setter
 @Entity
-@Table(name = "Player")
+@Table(name = "player")
 public class Player {
     @Id
     @GeneratedValue(generator = "increment")
     @GenericGenerator(name="increment", strategy = "increment")
-    @Column(name = "player_id")
+    @Column(name = "player_id", nullable = false)
     private Long id;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
+    @Column(name = "uuid", nullable = false)
+    private UUID uuid;
     @Column(name = "money")
     private Long money;
     @Column(name = "coord_x")
@@ -29,10 +32,8 @@ public class Player {
     private Long coordZ;
     @Column(name = "ip_address")
     private String ipAddress;
-    @Column(name = "asd")
-    private String asd;
 
     @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name = "Permission_group_id")
-    private Groups group;
+    private PermissionGroup group;
 }

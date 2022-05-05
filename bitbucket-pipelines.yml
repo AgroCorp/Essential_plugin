@@ -30,7 +30,7 @@ pipelines:
         caches:
           - maven
         script:
-          - sed -i "s/%versionNumber%/1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT/g" pom.xml
+          - sed -i "s/${versionNumber}/1.${BITBUCKET_BUILD_NUMBER}-SNAPSHOT/g" pom.xml
           - mvn package
           - pipe: atlassian/bitbucket-upload-file:0.3.2
             variables:

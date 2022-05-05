@@ -1,6 +1,5 @@
 package me.agronaut.essentials;
 
-import me.agronaut.essentials.Classes.SQLcontroller;
 import me.agronaut.essentials.Classes.baseScoreBoard;
 import me.agronaut.essentials.Utils.HibernateUtils;
 import me.agronaut.essentials.commands.*;
@@ -19,21 +18,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.FileUtil;
 import org.bukkit.util.Vector;
-import org.hibernate.SessionFactory;
-import org.hibernate.boot.MetadataSources;
-import org.hibernate.boot.registry.StandardServiceRegistry;
-import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
 
 import java.io.*;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.logging.Level;
 
 public final class Essentials extends JavaPlugin {
     private File moneyConfigFile;
@@ -93,7 +84,7 @@ public final class Essentials extends JavaPlugin {
             String password = getConfig().getString("db.pw");
             String database = getConfig().getString("db.db");
             int port = getConfig().getInt("db.port");
-            HibernateUtils.initialize(ip, username, password, port, database);
+            HibernateUtils.initialize();
         }
         else {
             createMoneyConfig();
@@ -120,33 +111,33 @@ public final class Essentials extends JavaPlugin {
                 ArrayList<String> groups = new ArrayList<>(permissionConfig.getStringList("users." + playerUUID + ".group"));
                 playersGroups.put(UUID.fromString(playerUUID), groups);
             }
-        }
 
-        getLogger().info("runnable initialize");
-        // add money after 30 minute
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (Player iter : getServer().getOnlinePlayers())
-                {
-                    iter.sendMessage(ChatColor.YELLOW + "online idod miatt kapsz 100$-t");
-                    if (playersMoney.containsKey(iter.getUniqueId()))
+            getLogger().info("runnable initialize");
+            // add money after 30 minute
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (Player iter : getServer().getOnlinePlayers())
                     {
-                        playersMoney.put(iter.getUniqueId(), playersMoney.get(iter.getUniqueId()) + 100L);
-                    } else {
-                        playersMoney.put(iter.getUniqueId(), 100L);
+                        iter.sendMessage(ChatColor.YELLOW + "online idod miatt kapsz 100$-t");
+                        if (playersMoney.containsKey(iter.getUniqueId()))
+                        {
+                            playersMoney.put(iter.getUniqueId(), playersMoney.get(iter.getUniqueId()) + 100L);
+                        } else {
+                            playersMoney.put(iter.getUniqueId(), 100L);
+                        }
+                        // after add money generate new scoreboard to players
+                        baseScoreBoard board = new baseScoreBoard(Essentials.this);
+                        board.showScoreboard(iter);
                     }
-                    // after add money generate new scoreboard to players
-                    baseScoreBoard board = new baseScoreBoard(Essentials.this);
-                    board.showScoreboard(iter);
                 }
-            }
-        }.runTaskTimer(this, 0L, 20 * 60 * 30);
+            }.runTaskTimer(this, 0L, 20 * 60 * 30);
+        }
     }
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+/*        // Plugin shutdown logic
 
         getLogger().info("save playersMoney");
         //save playersMoney
@@ -172,7 +163,7 @@ public final class Essentials extends JavaPlugin {
                 permissionConfig.set("users." + player.toString() + ".group", playersGroups.get(player));
             }
         }
-        savePermissions();
+        savePermissions();*/
     }
 
     public void showPlayer(Player player) {

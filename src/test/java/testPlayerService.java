@@ -1,4 +1,5 @@
-import me.agronaut.essentials.DAO.Groups;
+import me.agronaut.essentials.DAO.Permission;
+import me.agronaut.essentials.DAO.PermissionGroup;
 import me.agronaut.essentials.DAO.Player;
 import me.agronaut.essentials.Service.GroupService;
 import me.agronaut.essentials.Service.PlayerService;
@@ -7,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.LinkedList;
+import java.util.UUID;
 
 public class testPlayerService {
     private PlayerService playerSD;
@@ -22,21 +24,22 @@ public class testPlayerService {
     @Test
     public void saveTest() {
         Player player = new Player();
-        Groups group = new Groups();
+        PermissionGroup group = new PermissionGroup();
 
         group.setName("user");
 
-        LinkedList <String> permissions = new LinkedList<>();
-        permissions.add("essentials.heal.self");
-        permissions.add("essentials.feed.self");
-        permissions.add("essentials.hide");
-        permissions.add("essentials.fly");
+        LinkedList <Permission> permissions = new LinkedList<>();
+        permissions.add(new Permission("essentials.heal.self", group));
+        permissions.add(new Permission("essentials.feed.self", group));
+        permissions.add(new Permission("essentials.hide", group));
+        permissions.add(new Permission("essentials.fly", group));
 
         group.setPermissions(permissions);
 
         //groupSD.save(group);
 
         player.setName("Agronaut");
+        player.setUuid(UUID.randomUUID());
         player.setGroup(group);
 
         playerSD.save(player);

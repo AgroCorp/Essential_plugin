@@ -1,0 +1,12 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="runServer" type="JarApplication">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/target/server/paper-1.18.1-216.jar" />
+    <option name="VM_PARAMETERS" value="-Xmx1G -Xms1G -server" />
+    <option name="PROGRAM_PARAMETERS" value="nogui" />
+    <option name="WORKING_DIRECTORY" value="D:\Gabor\Bitbucket\essential_plugin\target\server" />
+    <option name="ALTERNATIVE_JRE_PATH" />
+    <method v="2">
+      <option name="RunConfigurationTask" enabled="true" run_configuration_name="Essentials_plugin [package]" run_configuration_type="MavenRunConfiguration" />
+    </method>
+  </configuration>
+</component>
